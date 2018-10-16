@@ -9,6 +9,11 @@
 
 在项目的build.gradle中添加：
 
+    dependencies {
+        ...
+        classpath 'com.hujiang.aspectjx:gradle-android-plugin-aspectjx:2.0.0'
+    }
+
     allprojects {
         repositories {
             ...
@@ -16,10 +21,12 @@
         }
       }
     }
-在APP模块下的build.gradle中添加依赖：
+在APP模块下的build.gradle中引用aspect插件并添加依赖：
+
+    apply plugin: 'android-aspectjx'
 
     dependencies {
-        implementation 'com.github.JuHonggang:PermissionManager:0.1'
+        implementation 'com.github.JuHonggang:PermissionManager:0.12'
     }
 
 #### 使用

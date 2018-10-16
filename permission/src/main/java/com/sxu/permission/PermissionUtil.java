@@ -120,7 +120,7 @@ public class PermissionUtil {
     private static void showSettingPermissionDialog(final Activity context) {
         new AlertDialog.Builder(context)
                 .setMessage(permissionSettingDesc)
-                .setNegativeButton("去设置", new DialogInterface.OnClickListener() {
+                .setNegativeButton("去开启", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
