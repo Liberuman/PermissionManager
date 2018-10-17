@@ -1,8 +1,11 @@
 package com.sxu.permission;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.view.View;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -31,44 +34,57 @@ public class PermissionAspect {
 	}
 
 	@Around("executionCheckPermission()")
-	public Object checkPermission(final ProceedingJoinPoint joinPoint) {
+	public void checkPermission(final ProceedingJoinPoint joinPoint) {
 		Context context = null;
 		Object object = joinPoint.getThis();
-		if (object instanceof Activity) {
+		if (object == null) {
+			Object[] args = joinPoint.getArgs();
+			if (args != null && args.length > 0) {
+				object = args[0];
+			} else {
+				return;
+			}
+		}
+		if (object instanceof OnContextListener) {
+			context = ((OnContextListener) object).getContext();
+		} else if (object instanceof Activity) {
 			context = (Context) object;
 		} else if (object instanceof Fragment) {
 			context = ((Fragment) object).getActivity();
 		} else if (object instanceof android.support.v4.app.Fragment) {
 			context = ((android.support.v4.app.Fragment) object).getActivity();
+		} else if (object instanceof Dialog) {
+			context = ((Dialog) object).getContext();
+		} else if (object instanceof View) {
+			context = ((View) object).getContext();
 		}
 
-		if (context != null) {
-			MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-			Method method = signature.getMethod();
-			CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
-			PermissionActivity.enter(context, checkPermission.permissions(), checkPermission.permissionDesc(),
-					checkPermission.settingDesc(), new PermissionUtil.OnPermissionRequestListener() {
-						@Override
-						public void onGranted() {
-							try {
-								joinPoint.proceed();
-							} catch (Throwable throwable) {
-								throwable.printStackTrace(System.err);
-							}
-						}
-
-						@Override
-						public void onCanceled() {
-
-						}
-
-						@Override
-						public void onDenied() {
-
-						}
-					});
+		if (context == null) {
+			return;
 		}
+		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+		Method method = signature.getMethod();
+		CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
+		PermissionActivity.enter(context, checkPermission.permissions(), checkPermission.permissionDesc(),
+				checkPermission.settingDesc(), new PermissionUtil.OnPermissionRequestListener() {
+					@Override
+					public void onGranted() {
+						try {
+							joinPoint.proceed();
+						} catch (Throwable throwable) {
+							throwable.printStackTrace(System.err);
+						}
+					}
 
-		return null;
+					@Override
+					public void onCanceled() {
+
+					}
+
+					@Override
+					public void onDenied() {
+
+					}
+				});
 	}
 }

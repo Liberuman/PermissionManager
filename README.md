@@ -26,12 +26,12 @@
     apply plugin: 'android-aspectjx'
 
     dependencies {
-        implementation 'com.github.JuHonggang:PermissionManager:0.12'
+        implementation 'com.github.JuHonggang:PermissionManager:0.13'
     }
 
 #### 使用
 
-直接使用CheckPermission注解即可：
+在Android组件(如Activity,Fragment,View,Dialog)的类中直接使用CheckPermission注解即可：
 
     @CheckPermission(permissions = {Manifest.permission.CAMERA}, permissionDesc = "没有权限无法使用相机", settingDesc = "快去设置中开启权限")
     public void openCamera() {
@@ -45,6 +45,27 @@
 
 说明：permissionDesc是权限询问状态时被用户拒绝时的Toast提示，settingDesc是用户直接拒绝后弹出对话框指导用户去设置打开权限的提示。
 
+
+在自定义的非Android组件类中申请权限时需要实现OnContextListener接口，如：
+
+    public class Example implements OnContextListener {
+
+        private Context context;
+
+        public Example(Context context) {
+            this.context = context;
+        }
+
+        @CheckPermission(permissions = {Manifest.permission.ACCESS_FINE_LOCATION}, permissionDesc = "没有权限无法定位", settingDesc = "快去设置中开启定位权限")
+        public void startLocation(Context context) {
+            Toast.makeText(context, "开始定位", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public Context getContext() {
+            return context;
+        }
+	}
 
 #### License
 
