@@ -25,6 +25,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -98,7 +99,9 @@ public class PermissionUtil {
         }
         if (refusedPermissionIndex != -1) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(context, permissions[refusedPermissionIndex])) {
-                Toast.makeText(context, permissionDesc, Toast.LENGTH_LONG).show();
+                if (!TextUtils.isEmpty(permissionDesc)) {
+                    Toast.makeText(context, permissionDesc, Toast.LENGTH_LONG).show();
+                }
                 if (requestListener != null) {
                     requestListener.onCanceled();
                 }
