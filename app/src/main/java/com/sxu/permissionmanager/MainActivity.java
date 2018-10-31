@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				openCamera();
+				call(MainActivity.this);
+				Toast.makeText(MainActivity.this, "执行了", Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 		startActivity(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
 	}
 
-	@CheckPermission(permissions = {Manifest.permission.CALL_PHONE})
+	@CheckPermission(permissions = {Manifest.permission.CALL_PHONE}, permissionDesc = "", isBlock = "0")
 	public static void call(Context context) {
 		Toast.makeText(context, "开始打电话", Toast.LENGTH_SHORT).show();
 	}

@@ -64,7 +64,7 @@ public class PermissionAspect {
 		}
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
-		CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
+		final CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
 		PermissionActivity.enter(context, checkPermission.permissions(), checkPermission.permissionDesc(),
 				checkPermission.settingDesc(), new PermissionUtil.OnPermissionRequestListener() {
 					@Override
@@ -78,7 +78,13 @@ public class PermissionAspect {
 
 					@Override
 					public void onCanceled() {
-
+						if (!CheckPermission.DEFAULT_IS_BLOCK_VALUE.equals(checkPermission.isBlock())) {
+							try {
+								joinPoint.proceed();
+							} catch (Throwable throwable) {
+								throwable.printStackTrace(System.err);
+							}
+						}
 					}
 
 					@Override
