@@ -18,7 +18,7 @@ import android.support.v7.app.AppCompatActivity;
  *******************************************************************************/
 public class PermissionActivity extends AppCompatActivity {
 
-	private static PermissionUtil.OnPermissionRequestListener permissionListener;
+	private static OnPermissionRequestListener permissionListener;
 
 	private static final String PARAMS_PERMISSION_DESC = "permission_desc";
 	private static final String PARAMS_SETTING_DESC = "setting_desc";
@@ -31,18 +31,18 @@ public class PermissionActivity extends AppCompatActivity {
 		String desc = getIntent().getStringExtra(PARAMS_PERMISSION_DESC);
 		String settingDesc = getIntent().getStringExtra(PARAMS_SETTING_DESC);
 		String[] requestPermissions = getIntent().getStringArrayExtra(PARAMS_PERMISSIONS);
-		PermissionUtil.setPermissionRequestListener(desc, settingDesc, permissionListener);
-		PermissionUtil.checkPermission(this, requestPermissions);
+		PermissionManager.getInstance().setParams(desc, settingDesc, permissionListener);
+		PermissionManager.getInstance().requestPermission(this, requestPermissions);
 	}
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-		PermissionUtil.requestCallback(this, requestCode, permissions, grantResults);
+		PermissionManager.getInstance().requestCallback(this, requestCode, permissions, grantResults);
 	}
 
 	public static void enter(Context context, String[] permissions, String permissionDesc,
-	                         String permissionSettingDesc, PermissionUtil.OnPermissionRequestListener listener) {
+	                         String permissionSettingDesc, OnPermissionRequestListener listener) {
 		Intent intent = new Intent(context, PermissionActivity.class);
 		intent.putExtra(PARAMS_PERMISSION_DESC, permissionDesc);
 		intent.putExtra(PARAMS_SETTING_DESC, permissionSettingDesc);

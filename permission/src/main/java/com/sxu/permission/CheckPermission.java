@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  *
  * Copyright: all rights reserved by Freeman.
  *******************************************************************************/
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckPermission {
 

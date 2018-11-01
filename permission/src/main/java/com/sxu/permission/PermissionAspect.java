@@ -1,14 +1,12 @@
 package com.sxu.permission;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -35,7 +33,6 @@ public class PermissionAspect {
 
 	@Around("executionCheckPermission()")
 	public void checkPermission(final ProceedingJoinPoint joinPoint) {
-		Context context = null;
 		Object object = joinPoint.getThis();
 		if (object == null) {
 			Object[] args = joinPoint.getArgs();
@@ -45,6 +42,47 @@ public class PermissionAspect {
 				return;
 			}
 		}
+		Context context = getContext(object);
+		if (context == null) {
+			return;
+		}
+
+		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+		Method method = signature.getMethod();
+		final CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
+		PermissionActivity.enter(context, checkPermission.permissions(), checkPermission.permissionDesc(),
+				checkPermission.settingDesc(), new OnPermissionRequestListener() {
+					@Override
+					public void onGranted(Activity context) {
+						try {
+							joinPoint.proceed();
+						} catch (Throwable throwable) {
+							throwable.printStackTrace(System.err);
+						}
+						context.finish();
+					}
+
+					@Override
+					public void onAsked(Activity context) {
+						if (!CheckPermission.DEFAULT_IS_BLOCK_VALUE.equals(checkPermission.isBlock())) {
+							try {
+								joinPoint.proceed();
+							} catch (Throwable throwable) {
+								throwable.printStackTrace(System.err);
+							}
+						}
+						context.finish();
+					}
+
+					@Override
+					public void onDenied(Activity context) {
+
+					}
+				});
+	}
+
+	private Context getContext(Object object) {
+		Context context = null;
 		if (object instanceof OnContextListener) {
 			context = ((OnContextListener) object).getContext();
 		} else if (object instanceof Activity) {
@@ -59,38 +97,6 @@ public class PermissionAspect {
 			context = ((View) object).getContext();
 		}
 
-		if (context == null) {
-			return;
-		}
-		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-		Method method = signature.getMethod();
-		final CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
-		PermissionActivity.enter(context, checkPermission.permissions(), checkPermission.permissionDesc(),
-				checkPermission.settingDesc(), new PermissionUtil.OnPermissionRequestListener() {
-					@Override
-					public void onGranted() {
-						try {
-							joinPoint.proceed();
-						} catch (Throwable throwable) {
-							throwable.printStackTrace(System.err);
-						}
-					}
-
-					@Override
-					public void onCanceled() {
-						if (!CheckPermission.DEFAULT_IS_BLOCK_VALUE.equals(checkPermission.isBlock())) {
-							try {
-								joinPoint.proceed();
-							} catch (Throwable throwable) {
-								throwable.printStackTrace(System.err);
-							}
-						}
-					}
-
-					@Override
-					public void onDenied() {
-
-					}
-				});
+		return context;
 	}
 }
