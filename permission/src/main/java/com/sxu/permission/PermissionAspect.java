@@ -76,7 +76,14 @@ public class PermissionAspect {
 
 					@Override
 					public void onDenied(Activity context) {
-
+						if (!CheckPermission.DEFAULT_IS_BLOCK_VALUE.equals(checkPermission.isBlock())) {
+							try {
+								joinPoint.proceed();
+							} catch (Throwable throwable) {
+								throwable.printStackTrace(System.err);
+							}
+						}
+						context.finish();
 					}
 				});
 	}

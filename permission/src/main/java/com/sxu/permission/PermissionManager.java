@@ -26,7 +26,10 @@ import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /*******************************************************************************
  * Description: 动态申请权限
@@ -42,7 +45,7 @@ public class PermissionManager {
     private final static int PERMISSION_REQUEST_CODE = 0x1001;
     private String explainDesc;
     private String permissionSettingDesc;
-
+    private List<Integer> permissionStatusList = new LinkedList<>(); // 解决请求权限回调结果不准确的问题
     private AlertStyle alertStyle;
     private OnPermissionRequestListener requestListener;
 
@@ -61,10 +64,8 @@ public class PermissionManager {
      * @return
      */
     public static boolean hasPermission(@NonNull Context context, @NonNull String permission) {
-        int contextCheck = ContextCompat.checkSelfPermission(context, permission);
-        int packageCheck = PermissionChecker.checkSelfPermission(context, permission);
-        Log.i("out", "contextCheck==" + contextCheck + " packageCheck=" + packageCheck);
-        if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+                || PermissionChecker.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
             return false;
         }
 
@@ -94,12 +95,15 @@ public class PermissionManager {
      * @param permissions
      */
     public void requestPermission(@NonNull Activity context, @NonNull String[] permissions) {
+        permissionStatusList.clear();
         List<String> refusedPermission = new ArrayList<>();
-        for (String item : permissions) {
-            if (!hasPermission(context, item)) {
-                refusedPermission.add(item);
+        for (int i = 0, size = permissions.length; i < size; i++) {
+            permissionStatusList.add(PermissionChecker.checkSelfPermission(context, permissions[i]));
+            if (permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
+                refusedPermission.add(permissions[i]);
             }
         }
+
         int refusedPermissionSize = refusedPermission.size();
         if (refusedPermissionSize > 0) {
             ActivityCompat.requestPermissions(context, refusedPermission.toArray(new String[refusedPermissionSize]),
@@ -116,14 +120,24 @@ public class PermissionManager {
             return;
         }
 
-        // todo grantResults返回值错误  同时有询问和禁用状态时，先处理询问权限，处理完后再处理禁用权限
         int refusedPermissionIndex = -1;
-        for (int i = 0; i < permissions.length; i++) {
-            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                refusedPermissionIndex = i;
-                break;
+        for (int i = 0, size = permissions.length; i < size; i++) {
+            //grantResults[i] = permissionStatusList.get(i);
+            if (grantResults[i] == PackageManager.PERMISSION_GRANTED
+                    || permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
+                grantResults[i] = PermissionChecker.checkSelfPermission(context, permissions[i]);
+                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                    if (refusedPermissionIndex == -1) {
+                        refusedPermissionIndex = i;
+                    }
+                }
+            } else {
+                if (refusedPermissionIndex == -1) {
+                    refusedPermissionIndex = i;
+                }
             }
         }
+
         if (refusedPermissionIndex != -1) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(context, permissions[refusedPermissionIndex])) {
                 alertStyle.onExplain(context, explainDesc);

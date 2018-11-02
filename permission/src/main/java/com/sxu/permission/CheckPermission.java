@@ -1,5 +1,8 @@
 package com.sxu.permission;
 
+import android.support.annotation.IntDef;
+import android.support.annotation.StringDef;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
