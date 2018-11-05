@@ -32,7 +32,8 @@ public class DefaultAlertStyle implements AlertStyle {
 
 	@Override
 	public void onSettingGuide(@NonNull final Activity context, String settingDesc) {
-		if (!TextUtils.isEmpty(settingDesc)) {
+		if (TextUtils.isEmpty(settingDesc)) {
+			context.finish();
 			return;
 		}
 
@@ -42,7 +43,6 @@ public class DefaultAlertStyle implements AlertStyle {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
-						context.finish();
 					}
 				})
 				.setPositiveButton("去开启", new DialogInterface.OnClickListener() {
@@ -55,8 +55,7 @@ public class DefaultAlertStyle implements AlertStyle {
 						} else {
 							Toast.makeText(context, "无法打开应用详情，请手动开启权限~", Toast.LENGTH_LONG).show();
 						}
-
-						context.finish();
+						dialog.dismiss();
 					}
 				})
 				.setOnDismissListener(new DialogInterface.OnDismissListener() {

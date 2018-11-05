@@ -83,7 +83,6 @@ public class PermissionAspect {
 								throwable.printStackTrace(System.err);
 							}
 						}
-						context.finish();
 					}
 				});
 	}

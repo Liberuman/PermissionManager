@@ -16,7 +16,7 @@ public class ContainerActivity extends AppCompatActivity {
 
 		boolean isNestling = getIntent().getBooleanExtra("isNestling", false);
 		if (isNestling) {
-			findViewById(R.id.title_text).setVisibility(View.GONE);
+			findViewById(R.id.no_annotation_button).setVisibility(View.GONE);
 		}
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.add(R.id.container_layout, isNestling ? new ContainerFragment() : new InnerFragment());

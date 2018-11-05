@@ -1,7 +1,7 @@
 package com.sxu.permissionmanager;
 
-import android.content.Context;
-import android.net.Uri;
+import android.Manifest;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +9,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.sxu.permission.OnPermissionRequestListener;
+import com.sxu.permission.PermissionManager;
 
 public class InnerFragment extends Fragment implements View.OnClickListener {
 
@@ -30,6 +34,8 @@ public class InnerFragment extends Fragment implements View.OnClickListener {
 
 		event = new Event(getActivity());
 
+		containerLayout.findViewById(R.id.no_annotation_button).setOnClickListener(this);
+
 		containerLayout.findViewById(R.id.location_button).setOnClickListener(this);
 		containerLayout.findViewById(R.id.phone_button).setOnClickListener(this);
 		containerLayout.findViewById(R.id.sms_button).setOnClickListener(this);
@@ -40,6 +46,27 @@ public class InnerFragment extends Fragment implements View.OnClickListener {
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
+			case R.id.no_annotation_button:
+				PermissionManager.getInstance().setParams("Fragment申请权限拒绝啦",
+						"Fragment开启权限引导描述", new OnPermissionRequestListener() {
+							@Override
+							public void onGranted(Activity context) {
+								Toast.makeText(context, "获取权限啦", Toast.LENGTH_SHORT).show();
+							}
+
+							@Override
+							public void onAsked(Activity context) {
+								Toast.makeText(context, "权限被拒绝了", Toast.LENGTH_SHORT).show();
+							}
+
+							@Override
+							public void onDenied(Activity context) {
+								Toast.makeText(context, "权限被彻底拒绝了", Toast.LENGTH_SHORT).show();
+							}
+						});
+				PermissionManager.getInstance().requestPermission(this,
+						new String[]{Manifest.permission.ACCESS_FINE_LOCATION});
+				break;
 			case R.id.location_button:
 				event.startLocation();
 				break;
@@ -58,5 +85,11 @@ public class InnerFragment extends Fragment implements View.OnClickListener {
 			default:
 				break;
 		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+		PermissionManager.getInstance().requestCallback(getActivity(), requestCode, permissions, grantResults);
 	}
 }

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.util.Log;
@@ -90,7 +91,7 @@ public class PermissionManager {
     }
 
     /**
-     * 检查所需权限是否已获取
+     * 用于Activity申请权限
      * @param context
      * @param permissions
      */
@@ -111,6 +112,32 @@ public class PermissionManager {
         } else {
             if (requestListener != null) {
                 requestListener.onGranted(context);
+            }
+        }
+    }
+
+    /**
+     * 用于Fragment申请权限
+     * @param fragment
+     * @param permissions
+     */
+    public void requestPermission(@NonNull Fragment fragment, @NonNull String[] permissions) {
+        permissionStatusList.clear();
+        List<String> refusedPermission = new ArrayList<>();
+        for (int i = 0, size = permissions.length; i < size; i++) {
+            permissionStatusList.add(PermissionChecker.checkSelfPermission(fragment.getActivity(), permissions[i]));
+            if (permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
+                refusedPermission.add(permissions[i]);
+            }
+        }
+
+        int refusedPermissionSize = refusedPermission.size();
+        if (refusedPermissionSize > 0) {
+            fragment.requestPermissions(refusedPermission.toArray(new String[refusedPermissionSize]),
+                    PERMISSION_REQUEST_CODE);
+        } else {
+            if (requestListener != null) {
+                requestListener.onGranted(fragment.getActivity());
             }
         }
     }

@@ -52,6 +52,14 @@ public class PermissionActivity extends AppCompatActivity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		if (!isFinishing()) {
+			finish();
+		}
+	}
+
+	@Override
 	public void finish() {
 		super.finish();
 		overridePendingTransition(0, 0);
