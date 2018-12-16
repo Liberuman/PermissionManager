@@ -34,17 +34,20 @@ public class PermissionAspect {
 	@Around("executionCheckPermission()")
 	public void checkPermission(final ProceedingJoinPoint joinPoint) {
 		Object object = joinPoint.getThis();
-		if (object == null) {
+		Context context = getContext(object);
+		if (context == null) { // 静态方法从参数中获取Context对象
 			Object[] args = joinPoint.getArgs();
 			if (args != null && args.length > 0) {
-				object = args[0];
-			} else {
+				for (int i = 0, size = args.length; i < size; i++) {
+					context = getContext(args[i]);
+					if (context != null) {
+						break;
+					}
+				}
+			}
+			if (context == null) {
 				return;
 			}
-		}
-		Context context = getContext(object);
-		if (context == null) {
-			return;
 		}
 
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();

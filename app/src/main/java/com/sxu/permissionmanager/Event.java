@@ -74,7 +74,7 @@ public class Event implements OnContextListener {
 
 
 	@CheckPermission(permissions = {Manifest.permission.ACCESS_FINE_LOCATION}, permissionDesc = "没有权限无法定位", settingDesc = "快去设置中开启定位权限")
-	public static void staticFuncTest(Context context) {
+	public static void staticFuncTest(int a, Context context) {
 		Toast.makeText(context, "静态方法中使用注解权限获取成功~", Toast.LENGTH_SHORT).show();
 	}
 
