@@ -35,14 +35,16 @@ public class PermissionAspect {
 	public void checkPermission(final ProceedingJoinPoint joinPoint) {
 		Object object = joinPoint.getThis();
 		Context context = getContext(object);
-		if (context == null) { // 静态方法从参数中获取Context对象
+		// 静态方法从参数中获取Context对象
+		if (context == null) {
 			Object[] args = joinPoint.getArgs();
-			if (args != null && args.length > 0) {
-				for (int i = 0, size = args.length; i < size; i++) {
-					context = getContext(args[i]);
-					if (context != null) {
-						break;
-					}
+			if (args == null || args.length == 0) {
+				return;
+			}
+			for (int i = 0, size = args.length; i < size; i++) {
+				context = getContext(args[i]);
+				if (context != null) {
+					break;
 				}
 			}
 			if (context == null) {
@@ -51,8 +53,14 @@ public class PermissionAspect {
 		}
 
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-		Method method = signature.getMethod();
+		Method method = signature != null ? signature.getMethod() : null;
+		if (method == null) {
+			return;
+		}
 		final CheckPermission checkPermission = method.getAnnotation(CheckPermission.class);
+		if (checkPermission == null) {
+			return;
+		}
 		PermissionActivity.enter(context, checkPermission.permissions(), checkPermission.permissionDesc(),
 				checkPermission.settingDesc(), new OnPermissionRequestListener() {
 					@Override
