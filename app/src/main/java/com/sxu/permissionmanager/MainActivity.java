@@ -14,6 +14,15 @@ import android.widget.Toast;
 import com.sxu.permission.CheckPermission;
 import com.sxu.permission.OnContextListener;
 
+/*******************************************************************************
+ *
+ * 申请权限示例主页面
+ *
+ * @author Freeman
+ *
+ * @date 2018/11/2
+ *
+ *******************************************************************************/
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 	private Event event;

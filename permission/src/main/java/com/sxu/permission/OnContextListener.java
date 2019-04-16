@@ -3,18 +3,22 @@ package com.sxu.permission;
 import android.content.Context;
 
 /*******************************************************************************
- * Description: 非Android组件类中的方法申请权限时需实现此接口
  *
- *  非Android组件类中的方法因不能获取Context对象而无法申请权限，
- *  所以可通过实现此接口来实现权限申请。
+ * 非Android组件类中的方法申请权限时可通过此接口传递Context
  *
- * Author: Freeman
+ * 说明：当不能通过方法的上下文获取Context对象时，无法动态申请权限，
+ *      所以可通过实现此接口来传递Context对象。
  *
- * Date: 2018/10/17
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/10/17
+ *
  *******************************************************************************/
 public interface OnContextListener {
 
+	/**
+	 * 获取Context对象
+	 * @return
+	 */
 	Context getContext();
 }

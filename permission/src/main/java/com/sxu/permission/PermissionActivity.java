@@ -8,13 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 /*******************************************************************************
- * Description: 用于申请权限的透明页面
  *
- * Author: Freeman
+ * 用于申请权限的透明页面
  *
- * Date: 2018/8/20
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/8/20
+ *
  *******************************************************************************/
 public class PermissionActivity extends AppCompatActivity {
 

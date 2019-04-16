@@ -14,6 +14,15 @@ import android.widget.Toast;
 import com.sxu.permission.OnPermissionRequestListener;
 import com.sxu.permission.PermissionManager;
 
+/*******************************************************************************
+ *
+ * 嵌套Fragment申请权限示例页面
+ *
+ * @author Freeman
+ *
+ * @date 2018/11/2
+ *
+ *******************************************************************************/
 public class InnerFragment extends Fragment implements View.OnClickListener {
 
 	private View containerLayout;

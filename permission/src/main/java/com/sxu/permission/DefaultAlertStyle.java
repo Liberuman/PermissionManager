@@ -1,8 +1,6 @@
 package com.sxu.permission;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,13 +11,13 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 /*******************************************************************************
- * Description: 默认的解释申请权限和引导用户开启权限的样式
  *
- * Author: Freeman
+ * 默认的解释申请权限和引导用户开启权限的样式
  *
- * Date: 2018/11/1
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/11/1
+ *
  *******************************************************************************/
 public class DefaultAlertStyle implements AlertStyle {
 

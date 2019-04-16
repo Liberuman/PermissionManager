@@ -1,21 +1,18 @@
 package com.sxu.permission;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /*******************************************************************************
- * Description: 权限注解
  *
- * Author: Freeman
+ * 权限注解的定义
  *
- * Date: 2018/8/17
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/8/17
+ *
  *******************************************************************************/
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

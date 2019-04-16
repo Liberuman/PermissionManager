@@ -24,29 +24,26 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
-import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /*******************************************************************************
- * Description: 动态申请权限
  *
- * Author: Freeman
+ * 动态申请权限
  *
- * Date: 2018/6/10
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/6/10
+ *
  *******************************************************************************/
 public class PermissionManager {
 
     private final static int PERMISSION_REQUEST_CODE = 0x1001;
     private String explainDesc;
     private String permissionSettingDesc;
-    private List<Integer> permissionStatusList = new LinkedList<>(); // 解决请求权限回调结果不准确的问题
+    private List<Integer> permissionStatusList = new LinkedList<>();
     private AlertStyle alertStyle;
     private OnPermissionRequestListener requestListener;
 
@@ -55,7 +52,7 @@ public class PermissionManager {
     }
 
     public static PermissionManager getInstance() {
-        return Singleton.instance;
+        return Singleton.INSTANCE;
     }
 
     /**
@@ -79,14 +76,17 @@ public class PermissionManager {
      * @param permissions
      * @return
      */
-    public static boolean hasPermission(@NonNull Context context, @NonNull String[] permissions) {
+    public static boolean hasPermission(@NonNull Context context, String[] permissions) {
+        if (permissions == null ||  permissions.length == 0) {
+            return true;
+        }
+
         for (String item : permissions) {
             if (ContextCompat.checkSelfPermission(context, item) != PackageManager.PERMISSION_GRANTED
                     || PermissionChecker.checkSelfPermission(context, item) != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
-
         return true;
     }
 
@@ -95,7 +95,14 @@ public class PermissionManager {
      * @param context
      * @param permissions
      */
-    public void requestPermission(@NonNull Activity context, @NonNull String[] permissions) {
+    public void requestPermission(@NonNull Activity context, String[] permissions) {
+        if (permissions == null ||  permissions.length == 0) {
+            if (requestListener != null) {
+                requestListener.onGranted(context);
+            }
+            return;
+        }
+
         permissionStatusList.clear();
         List<String> refusedPermission = new ArrayList<>();
         for (int i = 0, size = permissions.length; i < size; i++) {
@@ -121,7 +128,14 @@ public class PermissionManager {
      * @param fragment
      * @param permissions
      */
-    public void requestPermission(@NonNull Fragment fragment, @NonNull String[] permissions) {
+    public void requestPermission(@NonNull Fragment fragment, String[] permissions) {
+        if (permissions == null ||  permissions.length == 0) {
+            if (requestListener != null) {
+                requestListener.onGranted(fragment.getActivity());
+            }
+            return;
+        }
+
         permissionStatusList.clear();
         List<String> refusedPermission = new ArrayList<>();
         for (int i = 0, size = permissions.length; i < size; i++) {
@@ -142,14 +156,13 @@ public class PermissionManager {
         }
     }
 
-    public void requestCallback(final Activity context, int requestCode, String permissions[], int[] grantResults) {
+    public void requestCallback(final Activity context, int requestCode, String []permissions, int[] grantResults) {
         if (requestCode != PERMISSION_REQUEST_CODE) {
             return;
         }
 
         int refusedPermissionIndex = -1;
         for (int i = 0, size = permissions.length; i < size; i++) {
-            //grantResults[i] = permissionStatusList.get(i);
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED
                     || permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
                 grantResults[i] = PermissionChecker.checkSelfPermission(context, permissions[i]);
@@ -185,7 +198,7 @@ public class PermissionManager {
     }
 
     public PermissionManager setAlertStyle(@NonNull AlertStyle alertStyle) {
-        this.alertStyle = this.alertStyle;
+        this.alertStyle = alertStyle;
         return this;
     }
 
@@ -211,6 +224,6 @@ public class PermissionManager {
     }
 
     public static class Singleton {
-        private final static PermissionManager instance = new PermissionManager();
+        private final static PermissionManager INSTANCE = new PermissionManager();
     }
 }

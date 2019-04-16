@@ -15,13 +15,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import java.lang.reflect.Method;
 
 /*******************************************************************************
- * Description: 权限切面
  *
- * Author: Freeman
+ * 权限切面的实现
  *
- * Date: 2018/8/17
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/8/17
+ *
  *******************************************************************************/
 @Aspect
 public class PermissionAspect {

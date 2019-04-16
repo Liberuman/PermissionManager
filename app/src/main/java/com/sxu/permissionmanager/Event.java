@@ -9,13 +9,13 @@ import com.sxu.permission.OnContextListener;
 import com.sxu.permission.PermissionManager;
 
 /*******************************************************************************
- * Description: 申请权限的测试用例，在非Android组件的类中使用注解时需实现OnContextListener接口
  *
- * Author: Freeman
+ * 申请权限的测试用例，在非Android组件的类中使用注解时需实现OnContextListener接口
  *
- * Date: 2018/11/2
+ * @author Freeman
  *
- * Copyright: all rights reserved by Freeman.
+ * @date 2018/11/2
+ *
  *******************************************************************************/
 public class Event implements OnContextListener {
 	

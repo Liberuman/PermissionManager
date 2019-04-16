@@ -7,6 +7,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+
+/*******************************************************************************
+ *
+ * 容器类Activity
+ *
+ * @author Freeman
+ *
+ * @date 2018/11/2
+ *
+ *******************************************************************************/
 public class ContainerActivity extends AppCompatActivity {
 
 	@Override
