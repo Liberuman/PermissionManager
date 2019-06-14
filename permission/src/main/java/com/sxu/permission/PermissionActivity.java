@@ -47,6 +47,7 @@ public class PermissionActivity extends AppCompatActivity {
 		intent.putExtra(PARAMS_PERMISSION_DESC, permissionDesc);
 		intent.putExtra(PARAMS_SETTING_DESC, permissionSettingDesc);
 		intent.putExtra(PARAMS_PERMISSIONS, permissions);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		permissionListener = listener;
 		context.startActivity(intent);
 	}

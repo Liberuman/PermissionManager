@@ -2,6 +2,7 @@ package com.sxu.permissionmanager;
 
 import android.Manifest;
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.sxu.permission.CheckPermission;
@@ -67,6 +68,7 @@ public class Event implements OnContextListener {
 		if (PermissionManager.hasPermission(context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
 				Manifest.permission.ACCESS_COARSE_LOCATION})) {
 			// todo 需要权限才能执行的逻辑
+			Toast.makeText(context, "已获得权限", Toast.LENGTH_LONG).show();
 		}
 
 		Toast.makeText(context, "未获取权限，代码继续执行", Toast.LENGTH_LONG).show();
@@ -74,7 +76,7 @@ public class Event implements OnContextListener {
 
 
 	@CheckPermission(permissions = {Manifest.permission.ACCESS_FINE_LOCATION}, permissionDesc = "没有权限无法定位", settingDesc = "快去设置中开启定位权限")
-	public static void staticFuncTest(int a, Context context) {
+	public static void staticFuncTest(Context context) {
 		Toast.makeText(context, "静态方法中使用注解权限获取成功~", Toast.LENGTH_SHORT).show();
 	}
 

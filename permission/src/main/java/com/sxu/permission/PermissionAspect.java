@@ -1,7 +1,11 @@
 package com.sxu.permission;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ContentProvider;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
@@ -102,8 +106,10 @@ public class PermissionAspect {
 		Context context = null;
 		if (object instanceof OnContextListener) {
 			context = ((OnContextListener) object).getContext();
-		} else if (object instanceof Activity) {
+		} else if (object instanceof Activity || object instanceof Application || object instanceof Service) {
 			context = (Context) object;
+		} else if (object instanceof ContentProvider) {
+			context = ((ContentProvider) object).getContext();
 		} else if (object instanceof Fragment) {
 			context = ((Fragment) object).getActivity();
 		} else if (object instanceof android.support.v4.app.Fragment) {
