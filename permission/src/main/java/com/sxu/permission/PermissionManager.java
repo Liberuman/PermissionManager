@@ -26,8 +26,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /*******************************************************************************
  *
@@ -43,7 +45,6 @@ public class PermissionManager {
     private final static int PERMISSION_REQUEST_CODE = 0x1001;
     private String explainDesc;
     private String permissionSettingDesc;
-    private List<Integer> permissionStatusList = new LinkedList<>();
     private AlertStyle alertStyle;
     private OnPermissionRequestListener requestListener;
 
@@ -96,31 +97,7 @@ public class PermissionManager {
      * @param permissions
      */
     public void requestPermission(@NonNull Activity context, String[] permissions) {
-        if (permissions == null ||  permissions.length == 0) {
-            if (requestListener != null) {
-                requestListener.onGranted(context);
-            }
-            return;
-        }
-
-        permissionStatusList.clear();
-        List<String> refusedPermission = new ArrayList<>();
-        for (int i = 0, size = permissions.length; i < size; i++) {
-            permissionStatusList.add(PermissionChecker.checkSelfPermission(context, permissions[i]));
-            if (permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
-                refusedPermission.add(permissions[i]);
-            }
-        }
-
-        int refusedPermissionSize = refusedPermission.size();
-        if (refusedPermissionSize > 0) {
-            ActivityCompat.requestPermissions(context, refusedPermission.toArray(new String[refusedPermissionSize]),
-                    PERMISSION_REQUEST_CODE);
-        } else {
-            if (requestListener != null) {
-                requestListener.onGranted(context);
-            }
-        }
+	    realRequestPermission(context, permissions);
     }
 
     /**
@@ -129,31 +106,44 @@ public class PermissionManager {
      * @param permissions
      */
     public void requestPermission(@NonNull Fragment fragment, String[] permissions) {
-        if (permissions == null ||  permissions.length == 0) {
-            if (requestListener != null) {
-                requestListener.onGranted(fragment.getActivity());
-            }
-            return;
-        }
+        realRequestPermission(fragment, permissions);
+    }
 
-        permissionStatusList.clear();
-        List<String> refusedPermission = new ArrayList<>();
-        for (int i = 0, size = permissions.length; i < size; i++) {
-            permissionStatusList.add(PermissionChecker.checkSelfPermission(fragment.getActivity(), permissions[i]));
-            if (permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
-                refusedPermission.add(permissions[i]);
-            }
-        }
+	/**
+	 * 申请权限
+	 * @param object
+	 * @param permissions
+	 */
+	private void realRequestPermission(@NonNull Object object, String[] permissions) {
+    	Activity activity = object instanceof Activity ? (Activity) object : ((Fragment)object).getActivity();
+	    if (permissions == null ||  permissions.length == 0) {
+		    if (requestListener != null) {
+			    requestListener.onGranted(activity);
+		    }
+		    return;
+	    }
 
-        int refusedPermissionSize = refusedPermission.size();
-        if (refusedPermissionSize > 0) {
-            fragment.requestPermissions(refusedPermission.toArray(new String[refusedPermissionSize]),
-                    PERMISSION_REQUEST_CODE);
-        } else {
-            if (requestListener != null) {
-                requestListener.onGranted(fragment.getActivity());
-            }
-        }
+	    List<String> refusedPermission = new LinkedList<>();
+	    for (int i = 0, size = permissions.length; i < size; i++) {
+		    int permissionStatus = PermissionChecker.checkSelfPermission(activity, permissions[i]);
+		    if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+			    refusedPermission.add(permissions[i]);
+		    }
+	    }
+	    int refusedPermissionSize = refusedPermission.size();
+	    if (refusedPermissionSize > 0) {
+	    	if (object instanceof Activity) {
+			    ActivityCompat.requestPermissions(activity,
+				    refusedPermission.toArray(new String[refusedPermissionSize]), PERMISSION_REQUEST_CODE);
+		    } else {
+			    ((Fragment)object).requestPermissions(refusedPermission.toArray(new String[refusedPermissionSize]),
+				    PERMISSION_REQUEST_CODE);
+		    }
+	    } else {
+		    if (requestListener != null) {
+			    requestListener.onGranted(activity);
+		    }
+	    }
     }
 
     public void requestCallback(final Activity context, int requestCode, String []permissions, int[] grantResults) {
@@ -163,18 +153,9 @@ public class PermissionManager {
 
         int refusedPermissionIndex = -1;
         for (int i = 0, size = permissions.length; i < size; i++) {
-            if (grantResults[i] == PackageManager.PERMISSION_GRANTED
-                    || permissionStatusList.get(i) != PackageManager.PERMISSION_GRANTED) {
-                grantResults[i] = PermissionChecker.checkSelfPermission(context, permissions[i]);
-                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-                    if (refusedPermissionIndex == -1) {
-                        refusedPermissionIndex = i;
-                    }
-                }
-            } else {
-                if (refusedPermissionIndex == -1) {
-                    refusedPermissionIndex = i;
-                }
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+	            refusedPermissionIndex = i;
+	            break;
             }
         }
 
